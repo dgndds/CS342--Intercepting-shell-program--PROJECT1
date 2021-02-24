@@ -6,7 +6,6 @@
 #include <unistd.h>
 
 char** getParams(char* str1){
-//Deneme
 	char *str = malloc(strlen(str1) + 1);
 	strcpy(str,str1);
 	char *param = strtok(str," ");
