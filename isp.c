@@ -4,6 +4,7 @@
 #include <string.h>
 #include <sys/wait.h>
 #include <unistd.h>
+#include <sys/time.h>
 
 char** getParams(char* str1){
 	char *str = malloc(strlen(str1) + 1);
@@ -37,6 +38,11 @@ int main(int argc, char *argv[]){
 	char *ignore = malloc(150);
 	char** params1;
 	char** params2;
+	
+	if(argc != 3){
+		printf("INAPPROPRIATE ARGUMENT COUNT \n");
+		return -1;
+	}
 	
 	int bufferSize = atoi(argv[1]);
 	int mode = atoi(argv[2]);
@@ -109,6 +115,11 @@ int main(int argc, char *argv[]){
 			params2 = getParams(input2);
 		}
 		
+		struct timeval timeval1;
+		struct timeval timeval2;
+		
+		gettimeofday(&timeval1,NULL);
+		
 		//EXECUTE COMMANDS
 		if(strcmp(input1,"")!= 0 && strcmp(input2,"")==0){
 			//SINGLE COMMAND EXECUTION
@@ -119,7 +130,7 @@ int main(int argc, char *argv[]){
 				printf("Execution of the command failed!");
 			}else if(pid == 0){
 				//Child process
-				printf("Executing %s\n",input1);
+				//printf("Executing %s\n",input1);
 				execvp(params1[0],params1);
 				break;
 			}else{
@@ -252,6 +263,13 @@ int main(int argc, char *argv[]){
 				printf("write-call-count: %d\n",Wcounter);
 			}
 		}
+		
+		double elapsedTime = 0.0;
+		
+		gettimeofday(&timeval2,NULL);
+		
+		elapsedTime = (timeval2.tv_usec - timeval1.tv_usec) / 1000.0;
+		printf("--- TIME TAKEN TO EXECUTE: %f ms ---\n",elapsedTime);
 		
 		//printf("Your command: %s\n", input);
 		//printf("Your first command: %s\n",input1);
