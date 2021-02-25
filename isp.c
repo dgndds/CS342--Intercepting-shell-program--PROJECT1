@@ -32,10 +32,10 @@ char** getParams(char* str1){
 
 int main(int argc, char *argv[]){
 	
-	char *input = malloc(150);
-	char *input1 = malloc(150);
-	char *input2 = malloc(150);
-	char *ignore = malloc(150);
+	char *input = malloc(sizeof(char) * 150);
+	char *input1 = malloc(sizeof(char) * 150);
+	char *input2 = malloc(sizeof(char) * 150);
+	char *ignore = malloc(sizeof(char) * 150);
 	char** params1;
 	char** params2;
 	
@@ -65,9 +65,14 @@ int main(int argc, char *argv[]){
 	
 	while(1){
 		//INIT AND CLEAR BUFFERS
-		input = strdup("");
-		input1 = strdup("");
-		input2 = strdup("");
+		/*input = strdup("\0");
+		input1 = strdup("\0");
+		input2 = strdup("\0");
+		ignore = strdup("\0");*/
+		memset(input,0,150);
+		memset(input1,0,150);
+		memset(input2,0,150);
+		memset(ignore,0,150);
 		
 		//printf("argv 0: %s\n", argv[0]);
 		//printf("argv 1: %s\n", argv[1]);
@@ -82,10 +87,9 @@ int main(int argc, char *argv[]){
 			printf("DUDE NO PLEASE!!!\n");
 			continue;
 		}
-		
+			
 		//SCAN THE INPUT AND CHECK FORMAT
-		int result = sscanf(input, "%[^|^\t^\n]| %[^|^\t^\n]| %[^|^\t^\n]", input1, input2,ignore);
-		
+		int result = sscanf(input, "%[^|^\t^\n]|%[^|^\t^\n]|%[^|^\t^\n]", input1, input2,ignore);
 		
 		if(result > 2){
 			printf("DUDE NO PLEASE!!!\n");
@@ -174,8 +178,8 @@ int main(int argc, char *argv[]){
 					//Child process 2
 					//exec...
 					dup2(fd[0],STDIN_FILENO);
-					close(fd[0]);
 					close(fd[1]);
+					close(fd[0]);
 					execvp(params2[0],params2);
 				}
 				
@@ -184,6 +188,7 @@ int main(int argc, char *argv[]){
 				close(fd[1]);
 				waitpid(pid1,NULL,0);
 				waitpid(pid2, NULL,0);
+				
 				//printf("Childs completed!\n");
 			}else if(mode == 2){
 				//TAPED MODE EXECUTION
@@ -271,9 +276,9 @@ int main(int argc, char *argv[]){
 		elapsedTime = (timeval2.tv_usec - timeval1.tv_usec) / 1000.0;
 		printf("--- TIME TAKEN TO EXECUTE: %f ms ---\n",elapsedTime);
 		
-		//printf("Your command: %s\n", input);
-		//printf("Your first command: %s\n",input1);
-		//printf("Your second command: %s\n",input2);
+		printf("Your command: %s\n", input);
+		printf("Your first command: %s\n",input1);
+		printf("Your second command: %s\n",input2);
 		
 	}
 	

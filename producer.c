@@ -14,6 +14,5 @@ int main(int argc, char *argv[])
 	for(int i = 0; i < numOfChars; i++){
 		printf("%c\n",alphanum[rand() % (sizeof(alphanum) - 1)]);
 	}
-	
 	return 0;
 }
