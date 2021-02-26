@@ -244,6 +244,7 @@ int main(int argc, char *argv[]){
 				int charCountSum = 0;
 		
 				charCount = read(fd1[0],buffer,bufferSize);
+				Rcounter++;
 				
 				while(charCount != 0){
 					write(fd2[1],buffer,bufferSize);
@@ -273,7 +274,10 @@ int main(int argc, char *argv[]){
 		
 		gettimeofday(&timeval2,NULL);
 		
-		elapsedTime = (timeval2.tv_usec - timeval1.tv_usec) / 1000.0;
+		elapsedTime = (timeval2.tv_sec - timeval1.tv_sec) + (timeval2.tv_usec - timeval1.tv_usec) / 1000000.0;
+		//(timeval2.tv_usec - timeval1.tv_usec) / 1000.0;;
+		//(timeval2.tv_sec - timeval1.tv_sec) + (timeval2.tv_usec - timeval1.tv_usec) / 1000000.0;
+		//((unsigned long long)timeval2.tv_usec - (unsigned long long)timeval1.tv_usec) / 1000.0;
 		printf("--- TIME TAKEN TO EXECUTE: %f ms ---\n",elapsedTime);
 		
 		printf("Your command: %s\n", input);
