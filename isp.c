@@ -6,18 +6,13 @@
 #include <unistd.h>
 #include <sys/time.h>
 
-char** getParams(char* str1){
-	char *str = malloc(strlen(str1) + 1);
-	strcpy(str,str1);
+char** getParams(char* str){
 	char *param = strtok(str," ");
 	char** result = NULL;
 	int space = 0;
 	
 	while(param){
 		result = realloc(result , sizeof(char*)*++space);
-		
-		//if(result == NULL)
-			//return;
 		
 		result[space - 1] = param;
 		
@@ -36,8 +31,8 @@ int main(int argc, char *argv[]){
 	char *input1 = malloc(sizeof(char) * 150);
 	char *input2 = malloc(sizeof(char) * 150);
 	char *ignore = malloc(sizeof(char) * 150);
-	char** params1;
-	char** params2;
+	char** params1 = NULL;
+	char** params2 = NULL;
 	
 	if(argc != 3){
 		printf("INAPPROPRIATE ARGUMENT COUNT \n");
@@ -64,19 +59,16 @@ int main(int argc, char *argv[]){
 	}
 	
 	while(1){
+		
+		if(strcmp(input,"q") == 0){
+			break;
+		}
+		
 		//INIT AND CLEAR BUFFERS
-		/*input = strdup("\0");
-		input1 = strdup("\0");
-		input2 = strdup("\0");
-		ignore = strdup("\0");*/
 		memset(input,0,150);
 		memset(input1,0,150);
 		memset(input2,0,150);
 		memset(ignore,0,150);
-		
-		//printf("argv 0: %s\n", argv[0]);
-		//printf("argv 1: %s\n", argv[1]);
-		//printf("argv 2: %s\n", argv[2]);
 	
 		// READ USER INPUT
 		printf("\nisp$ ");
@@ -109,7 +101,7 @@ int main(int argc, char *argv[]){
 			continue;
 		}
 		
-		//ANALYZE COMMANDS
+		//ANALYZE COMMANDSs
 		
 		if(strcmp(input1,"") != 0){
 			params1 = getParams(input1);
@@ -134,12 +126,10 @@ int main(int argc, char *argv[]){
 				printf("Execution of the command failed!");
 			}else if(pid == 0){
 				//Child process
-				//printf("Executing %s\n",input1);
 				execvp(params1[0],params1);
 				break;
 			}else{
 				wait(NULL);
-				//printf("Child completed!\n");
 			}
 		}else if(strcmp(input1,"")!= 0 && strcmp(input2,"")!=0){
 			//COMPOUND COMMAND EXECUTION
@@ -161,7 +151,6 @@ int main(int argc, char *argv[]){
 					return 3;
 				}else if(pid1 == 0){
 					//Child process 1
-					//exec...
 					dup2(fd[1],STDOUT_FILENO);
 					close(fd[0]);
 					close(fd[1]);
@@ -176,7 +165,6 @@ int main(int argc, char *argv[]){
 					return 3;
 				}else if(pid2 == 0){
 					//Child process 2
-					//exec...
 					dup2(fd[0],STDIN_FILENO);
 					close(fd[1]);
 					close(fd[0]);
@@ -188,8 +176,6 @@ int main(int argc, char *argv[]){
 				close(fd[1]);
 				waitpid(pid1,NULL,0);
 				waitpid(pid2, NULL,0);
-				
-				//printf("Childs completed!\n");
 			}else if(mode == 2){
 				//TAPED MODE EXECUTION
 				int fd1[2];
@@ -209,7 +195,6 @@ int main(int argc, char *argv[]){
 				}else if(pid1 == 0){
 					//Child process 1
 					dup2(fd1[1],STDOUT_FILENO);
-					//write(fd[1],);
 					close(fd1[0]);
 					close(fd1[1]);
 					close(fd2[0]);
@@ -249,8 +234,6 @@ int main(int argc, char *argv[]){
 				while(charCount != 0){
 					write(fd2[1],buffer,bufferSize);
 					Wcounter++;
-					//printf("Buffer length: %lu\n",strlen(buffer));
-					//printf("writing to input:%d\n",counter);
 					charCountSum += charCount;
 					charCount = read(fd1[0],buffer,bufferSize);
 					Rcounter++;
@@ -262,7 +245,6 @@ int main(int argc, char *argv[]){
 				//Wait Childs
 				waitpid(pid1,NULL,0);
 				waitpid(pid2, NULL,0);
-				//printf("Childs completed!\n");
 				
 				printf("character-count: %d\n",charCountSum);
 				printf("read-call-count: %d\n",Rcounter);
@@ -275,15 +257,22 @@ int main(int argc, char *argv[]){
 		gettimeofday(&timeval2,NULL);
 		
 		elapsedTime = (timeval2.tv_sec - timeval1.tv_sec) + (timeval2.tv_usec - timeval1.tv_usec) / 1000000.0;
-		//(timeval2.tv_usec - timeval1.tv_usec) / 1000.0;;
-		//(timeval2.tv_sec - timeval1.tv_sec) + (timeval2.tv_usec - timeval1.tv_usec) / 1000000.0;
-		//((unsigned long long)timeval2.tv_usec - (unsigned long long)timeval1.tv_usec) / 1000.0;
 		printf("--- TIME TAKEN TO EXECUTE: %f ms ---\n",elapsedTime);
 		
-		printf("Your command: %s\n", input);
+		/*printf("Your command: %s\n", input);
 		printf("Your first command: %s\n",input1);
-		printf("Your second command: %s\n",input2);
+		printf("Your second command: %s\n",input2);*/
+		
+		if(params1 != NULL){free(params1);}
+		if(params2 != NULL){free(params2);}
 		
 	}
+	
+	free(input);
+	free(input1);
+	free(input2);
+	free(ignore);
+	
+	return 0;
 	
 }
