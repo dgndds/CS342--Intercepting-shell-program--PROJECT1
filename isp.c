@@ -27,10 +27,10 @@ char** getParams(char* str){
 
 int main(int argc, char *argv[]){
 	
-	char *input = malloc(sizeof(char) * 150);
-	char *input1 = malloc(sizeof(char) * 150);
-	char *input2 = malloc(sizeof(char) * 150);
-	char *ignore = malloc(sizeof(char) * 150);
+	char *input = malloc(sizeof(char) * 256);
+	char *input1 = malloc(sizeof(char) * 256);
+	char *input2 = malloc(sizeof(char) * 256);
+	char *ignore = malloc(sizeof(char) * 256);
 	char** params1 = NULL;
 	char** params2 = NULL;
 	
@@ -60,6 +60,7 @@ int main(int argc, char *argv[]){
 	
 	while(1){
 		
+		//EXIT OPTION
 		if(strcmp(input,"q") == 0){
 			break;
 		}
@@ -76,7 +77,7 @@ int main(int argc, char *argv[]){
 		sscanf(input,"%[^\n]",input);
 		
 		if(strcmp(input,"\n") == 0){
-			printf("DUDE NO PLEASE!!!\n");
+			printf("INPUT FORMAT IS NOT VALID\n");
 			continue;
 		}
 			
@@ -84,20 +85,20 @@ int main(int argc, char *argv[]){
 		int result = sscanf(input, "%[^|^\t^\n]|%[^|^\t^\n]|%[^|^\t^\n]", input1, input2,ignore);
 		
 		if(result > 2){
-			printf("DUDE NO PLEASE!!!\n");
+			printf("INPUT FORMAT IS NOT VALID\n");
 			continue;
 		}else if(result == 2){
 			if(strcmp(input2,"")==0){
-				printf("DUDE NO PLEASE!!!\n");
+				printf("INPUT FORMAT IS NOT VALID\n");
 				continue;
 			}
 		}else if(result == 1){
 			if(strcmp(input1,"")==0){
-				printf("DUDE NO PLEASE!!!\n");
+				printf("INPUT FORMAT IS NOT VALID\n");
 				continue;
 			}
 		}else if(result == 0){
-			printf("DUDE NO PLEASE!!!\n");
+			printf("INPUT FORMAT IS NOT VALID\n");
 			continue;
 		}
 		
@@ -111,6 +112,7 @@ int main(int argc, char *argv[]){
 			params2 = getParams(input2);
 		}
 		
+		//START TIMER
 		struct timeval timeval1;
 		struct timeval timeval2;
 		
@@ -252,27 +254,25 @@ int main(int argc, char *argv[]){
 			}
 		}
 		
-		double elapsedTime = 0.0;
-		
+		//STOP TIMER AND CALCULATE ELAPSED TIME
 		gettimeofday(&timeval2,NULL);
 		
-		elapsedTime = (timeval2.tv_sec - timeval1.tv_sec) + (timeval2.tv_usec - timeval1.tv_usec) / 1000000.0;
+		double elapsedTime = 0.0;
+		
+ 		elapsedTime = (timeval2.tv_sec - timeval1.tv_sec) * 1000.0 + (timeval2.tv_usec - timeval1.tv_usec) / 1000.0;
 		printf("--- TIME TAKEN TO EXECUTE: %f ms ---\n",elapsedTime);
 		
-		/*printf("Your command: %s\n", input);
-		printf("Your first command: %s\n",input1);
-		printf("Your second command: %s\n",input2);*/
-		
-		if(params1 != NULL){free(params1);}
-		if(params2 != NULL){free(params2);}
+		//FREE MEMORY BEFORE LOSING REFERENCE
+		if(params1 != NULL){free(params1); params1 = NULL;}
+		if(params2 != NULL){free(params2); params2 = NULL;}
 		
 	}
 	
+	//FREE ALLOCD MEMORY
 	free(input);
 	free(input1);
 	free(input2);
 	free(ignore);
 	
-	return 0;
-	
+	return 0;	
 }
